@@ -58,11 +58,11 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [ ✔ ] Commit: `Implement delete function in Subscriber repository.`
     -   [ ✔ ] Write answers of your learning module's "Reflection Publisher-1" questions in this README.
 -   **STAGE 2: Implement services and controllers**
-    -   [ ] Commit: `Create Notification service struct skeleton.`
-    -   [ ] Commit: `Implement subscribe function in Notification service.`
-    -   [ ] Commit: `Implement subscribe function in Notification controller.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification service.`
-    -   [ ] Commit: `Implement unsubscribe function in Notification controller.`
+    -   [ ✔ ] Commit: `Create Notification service struct skeleton.`
+    -   [ ✔ ] Commit: `Implement subscribe function in Notification service.`
+    -   [ ✔ ] Commit: `Implement subscribe function in Notification controller.`
+    -   [ ✔ ] Commit: `Implement unsubscribe function in Notification service.`
+    -   [ ✔ ] Commit: `Implement unsubscribe function in Notification controller.`
     -   [ ] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
 -   **STAGE 3: Implement notification mechanism**
     -   [ ] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
@@ -98,5 +98,37 @@ Ans:
 The Singleton pattern can be used to ensure that only one instance of a particular object exists in memory, however it does not inherently provide thread safety. Plus in a multi-threaded environment, if multiple threads attempt to access or modify the Singleton instance concurrently without proper synchronization, it can lead to data races and undefined behavior. So, I think using DashMap or similar thread-safe data structures is still necessary to ensure proper synchronization and thread safety when dealing with shared state across multiple threads in Rust.
 
 #### Reflection Publisher-2
+1. In the Model-View Controller (MVC) compound pattern, there is no “Service” and “Repository”. Model in MVC covers both data storage and business logic. Explain based on your understanding of design principles, why we need to separate “Service” and “Repository” from a Model?
+Ans:
+
+Separating *Service* and *Repository* from a Model in the MVC pattern improves code organization, maintainability, and testability. It follows the Single Responsibility Principle, allowing each component to focus on a specific concern: the Model represents data and behavior, the Repository handles data storage, and the Service encapsulates business logic. This separation enhances modularity, flexibility, and scalability while reducing complexity and dependencies within the system.
+
+2. What happens if we only use the Model? Explain your imagination on how the interactions between each model (Program, Subscriber, Notification) affect the code complexity for each model?
+Ans:
+
+If we only use the Model without separating concerns into Service and Repository layers, the interactions between each model (Program, Subscriber, Notification) would likely lead to increased code complexity within each model.
+
+- Program Model:
+
+In a scenario where the Program model handles both business logic and data storage, it would need to manage interactions with both Subscriber and Notification models directly.
+This could lead to bloated code within the Program model, as it would need to handle not only its own logic but also the logic related to managing subscribers and sending notifications.
+The Program model might become tightly coupled with the Subscriber and Notification models, making it harder to maintain and modify independently.
+
+- Subscriber Model:
+
+Similarly, if the Subscriber model handles interactions with the Program and Notification models directly, it could become overwhelmed with responsibilities.
+The Subscriber model might need to handle logic related to subscribing and unsubscribing from programs, as well as receiving and processing notifications.
+This could result in increased code complexity and decreased modularity within the Subscriber model.
+
+- Notification Model:
+
+Without a separate Service layer, the Notification model would need to handle both business logic related to sending notifications and data storage concerns.
+Managing interactions with the Program and Subscriber models directly could lead to complex logic within the Notification model, as it tries to coordinate communication between different parts of the system.
+This could make the Notification model difficult to maintain and extend, as changes in other models could have ripple effects on its functionality.
+
+3. Have you explored more about Postman? Tell us how this tool helps you to test your current work. You might want to also list which features in Postman you are interested in or feel like it is helpful to help your Group Project or any of your future software engineering projects.
+Ans:
+
+Yes. Postman allows us to easily send requests to API endpoints and inspect the responses, making it convenient to test different API functionalities, including GET, POST, PUT, DELETE, etc. I also used Postman to create design API for the group project. I feel like the collaboration features will be so helpful for the group project, in which we can share collections, collaboratee on tests, and track changes made by team members. 
 
 #### Reflection Publisher-3
