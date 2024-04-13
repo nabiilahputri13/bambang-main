@@ -1,4 +1,4 @@
-# BambangShop Publisher App
+# BambangShop Publisher App ⋆𐙚₊˚⊹♡
 Tutorial and Example for Advanced Programming 2024 - Faculty of Computer Science, Universitas Indonesia
 
 ---
@@ -63,13 +63,13 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [ ✔ ] Commit: `Implement subscribe function in Notification controller.`
     -   [ ✔ ] Commit: `Implement unsubscribe function in Notification service.`
     -   [ ✔ ] Commit: `Implement unsubscribe function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
+    -   [ ✔ ] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
 -   **STAGE 3: Implement notification mechanism**
-    -   [ ] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
-    -   [ ] Commit: `Implement notify function in Notification service to notify each Subscriber.`
-    -   [ ] Commit: `Implement publish function in Program service and Program controller.`
-    -   [ ] Commit: `Edit Product service methods to call notify after create/delete.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
+    -   [ ✔ ] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
+    -   [ ✔ ] Commit: `Implement notify function in Notification service to notify each Subscriber.`
+    -   [ ✔ ] Commit: `Implement publish function in Program service and Program controller.`
+    -   [ ✔ ] Commit: `Edit Product service methods to call notify after create/delete.`
+    -   [ ✔ ] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
 
 ## Your Reflections
 This is the place for you to write reflections:
@@ -132,3 +132,53 @@ Ans:
     Yes. Postman allows us to easily send requests to API endpoints and inspect the responses, making it convenient to test different API functionalities, including GET, POST, PUT, DELETE, etc. I also used Postman to create design API for the group project. I feel like the collaboration features will be so helpful for the group project, in which we can share collections, collaboratee on tests, and track changes made by team members. 
 
 #### Reflection Publisher-3
+1. Observer Pattern has two variations: Push model (publisher pushes data to subscribers) and Pull model (subscribers pull data from publisher). In this tutorial case, which variation of Observer Pattern that we use?
+Ans:
+
+    In this tutorial, we use push model variation of the Observer Pattern which could be shown by this part of code.
+
+    ```
+    pub struct NotificationService;
+
+    impl NotificationService {
+        pub fn notify(&self, product_type: &str, status: &str, product: Product) {
+            let mut payload: Notification = Notification {
+                product_title: product.clone().title,
+                product_type: String::from(product_type),
+                product_url: product.clone().get_url(),
+                subscriber_name: String::from(""),
+                status: String::from(status)
+            };
+
+            let subscribers: Vec<Subscriber> = SubscriberRepository::list_all(product_type);
+            for subscriber in subscribers {
+                payload.subscriber_name = subscriber.clone().name;
+                let subscriber_clone = subscriber.clone();
+                let payload_clone = payload.clone();
+                thread::spawn(move || subscriber_clone.update(payload_clone));
+            }
+        }
+    }
+
+    ```
+
+    It proactively notifies subscribers by pushing data (notifications) to them without them explicitly requesting it. The notify method iterates over the list of subscribers and pushes the notification payload to each subscriber by calling the update method on each subscriber instance.
+
+2. What are the advantages and disadvantages of using the other variation of Observer Pattern for this tutorial case? (example: if you answer Q1 with Push, then imagine if we used Pull)
+Ans:
+
+    Advantages of Pull Model Observer Pattern:
+    - Reduced Overhead: With the pull model, subscribers only request data when they need it. This can lead to reduced overhead, especially if there are many subscribers but not all of them need every update.
+    - Better Resource Management: Subscribers can control when they request updates, allowing them to optimize resource usage based on their needs. This can be beneficial in scenarios where resources are limited or expensive.
+    - Improved Scalability: Since subscribers pull data when needed, the system may be more scalable as it can handle a larger number of subscribers without significant performance degradation.
+
+    Disadvantages of Pull Model Observer Pattern:
+    - Latency: In the pull model, subscribers need to periodically poll the publisher for updates. This can introduce latency, especially if updates are infrequent or if subscribers need to poll frequently to ensure they don't miss updates.
+    - Complexity: Implementing the pull model can be more complex than the push model, especially when dealing with scenarios like efficient polling intervals, handling missed updates, and managing multiple subscribers efficiently.
+    - Increased Network Traffic: Polling for updates can result in increased network traffic, especially if subscribers poll frequently or if updates are small but frequent. This can impact both the publisher's and subscribers' network usage.
+    - Potential for Missed Updates: If subscribers don't poll frequently enough or if updates are missed due to network issues or other factors, subscribers may miss important updates, leading to inconsistent data or behavior.
+
+3. Explain what will happen to the program if we decide to not use multi-threading in the notification process.
+Ans:
+
+    Without multi-threading, the notification process would execute sequentially in the main thread. This could lead to blocking behavior, increased latency, poor responsiveness, and inefficient resource utilization. Subscribers would have to wait for their turn to receive notifications, potentially causing delays and impacting the overall performance of the application.
