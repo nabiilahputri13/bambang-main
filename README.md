@@ -80,9 +80,9 @@ This is the place for you to write reflections:
 1. In the Observer pattern diagram explained by the Head First Design Pattern book, Subscriber is defined as an interface. Explain based on your understanding of Observer design patterns, do we still need an interface (or trait in Rust) in this BambangShop case, or a single Model struct is enough?
 Ans:
 
-In the Observer design pattern, the Subscriber represents the observers who are interested in being notified of changes in the state of the subject (or publisher). While it's common to define Subscriber as an interface in many implementations of the Observer pattern, but not strictly necessary. 
+    In the Observer design pattern, the Subscriber represents the observers who are interested in being notified of changes in the state of the subject (or publisher). While it's common to define Subscriber as an interface in many implementations of the Observer pattern, but not strictly necessary. 
 
-In BambangShop, I think single model struct for subscribers is sufficient. Here are the reasons why:
+    In BambangShop, I think single model struct for subscribers is sufficient. Here are the reasons why:
 
 - SubscriberRepository manages subscribers for different product types, but there is *no indication that different types of subscribers require different behaviors.* All subscribers are handled uniformly within the repository without any need for polymorphism or dynamic behavior switching.
 - SubscriberRepository *directly handles subscriber objects without any need for an interface or trait to define a common contract.* Subscribers are added, listed, and deleted using concrete methods specific to the repository, which suggests that a single model struct is enough to represent subscribers.
@@ -90,45 +90,45 @@ In BambangShop, I think single model struct for subscribers is sufficient. Here 
 2. id in Program and url in Subscriber is intended to be unique. Explain based on your understanding, is using Vec (list) sufficient or using DashMap (map/dictionary) like we currently use is necessary for this case?
 Ans:
 
-I think it using DashMap like the current implementation is better than just using Vec. A DashMap provides a key-value mapping where each key is unique. This ensures that duplicate identifiers are not allowed. If we need to frequently check for the existence of an identifier or perform lookups by identifier, a DashMap would provide more efficient access. Retrieving an element from a DashMap has an average time complexity of O(1) compared to Vec which has a time complexity of O(n), where n is the number of elements in the list. Additionally, DashMap allows for easy deletion of elements by key, which might be useful if you need to remove subscribers or programs by their unique identifiers.
+    I think it using DashMap like the current implementation is better than just using Vec. A DashMap provides a key-value mapping where each key is unique. This ensures that duplicate identifiers are not allowed. If we need to frequently check for the existence of an identifier or perform lookups by identifier, a DashMap would provide more efficient access. Retrieving an element from a DashMap has an average time complexity of O(1) compared to Vec which has a time complexity of O(n), where n is the number of elements in the list. Additionally, DashMap allows for easy deletion of elements by key, which might be useful if you need to remove subscribers or programs by their unique identifiers.
 
 3. When programming using Rust, we are enforced by rigorous compiler constraints to make a thread-safe program. In the case of the List of Subscribers (SUBSCRIBERS) static variable, we used the DashMap external library for thread safe HashMap. Explain based on your understanding of design patterns, do we still need DashMap or we can implement Singleton pattern instead?
 Ans:
 
-The Singleton pattern can be used to ensure that only one instance of a particular object exists in memory, however it does not inherently provide thread safety. Plus in a multi-threaded environment, if multiple threads attempt to access or modify the Singleton instance concurrently without proper synchronization, it can lead to data races and undefined behavior. So, I think using DashMap or similar thread-safe data structures is still necessary to ensure proper synchronization and thread safety when dealing with shared state across multiple threads in Rust.
+    The Singleton pattern can be used to ensure that only one instance of a particular object exists in memory, however it does not inherently provide thread safety. Plus in a multi-threaded environment, if multiple threads attempt to access or modify the Singleton instance concurrently without proper synchronization, it can lead to data races and undefined behavior. So, I think using DashMap or similar thread-safe data structures is still necessary to ensure proper synchronization and thread safety when dealing with shared state across multiple threads in Rust.
 
 #### Reflection Publisher-2
 1. In the Model-View Controller (MVC) compound pattern, there is no “Service” and “Repository”. Model in MVC covers both data storage and business logic. Explain based on your understanding of design principles, why we need to separate “Service” and “Repository” from a Model?
 Ans:
 
-Separating *Service* and *Repository* from a Model in the MVC pattern improves code organization, maintainability, and testability. It follows the Single Responsibility Principle, allowing each component to focus on a specific concern: the Model represents data and behavior, the Repository handles data storage, and the Service encapsulates business logic. This separation enhances modularity, flexibility, and scalability while reducing complexity and dependencies within the system.
+    Separating *Service* and *Repository* from a Model in the MVC pattern improves code organization, maintainability, and testability. It follows the Single Responsibility Principle, allowing each component to focus on a specific concern: the Model represents data and behavior, the Repository handles data storage, and the Service encapsulates business logic. This separation enhances modularity, flexibility, and scalability while reducing complexity and dependencies within the system.
 
 2. What happens if we only use the Model? Explain your imagination on how the interactions between each model (Program, Subscriber, Notification) affect the code complexity for each model?
 Ans:
 
-If we only use the Model without separating concerns into Service and Repository layers, the interactions between each model (Program, Subscriber, Notification) would likely lead to increased code complexity within each model.
+    If we only use the Model without separating concerns into Service and Repository layers, the interactions between each model (Program, Subscriber, Notification) would likely lead to increased code complexity within each model.
 
-- Program Model:
+    - Program Model:
 
-In a scenario where the Program model handles both business logic and data storage, it would need to manage interactions with both Subscriber and Notification models directly.
-This could lead to bloated code within the Program model, as it would need to handle not only its own logic but also the logic related to managing subscribers and sending notifications.
-The Program model might become tightly coupled with the Subscriber and Notification models, making it harder to maintain and modify independently.
+    In a scenario where the Program model handles both business logic and data storage, it would need to manage interactions with both Subscriber and Notification models directly.
+    This could lead to bloated code within the Program model, as it would need to handle not only its own logic but also the logic related to managing subscribers and sending notifications.
+    The Program model might become tightly coupled with the Subscriber and Notification models, making it harder to maintain and modify independently.
 
-- Subscriber Model:
+    - Subscriber Model:
 
-Similarly, if the Subscriber model handles interactions with the Program and Notification models directly, it could become overwhelmed with responsibilities.
-The Subscriber model might need to handle logic related to subscribing and unsubscribing from programs, as well as receiving and processing notifications.
-This could result in increased code complexity and decreased modularity within the Subscriber model.
+    Similarly, if the Subscriber model handles interactions with the Program and Notification models directly, it could become overwhelmed with responsibilities.
+    The Subscriber model might need to handle logic related to subscribing and unsubscribing from programs, as well as receiving and processing notifications.
+    This could result in increased code complexity and decreased modularity within the Subscriber model.
 
-- Notification Model:
+    - Notification Model:
 
-Without a separate Service layer, the Notification model would need to handle both business logic related to sending notifications and data storage concerns.
-Managing interactions with the Program and Subscriber models directly could lead to complex logic within the Notification model, as it tries to coordinate communication between different parts of the system.
-This could make the Notification model difficult to maintain and extend, as changes in other models could have ripple effects on its functionality.
+    Without a separate Service layer, the Notification model would need to handle both business logic related to sending notifications and data storage concerns.
+    Managing interactions with the Program and Subscriber models directly could lead to complex logic within the Notification model, as it tries to coordinate communication between different parts of the system.
+    This could make the Notification model difficult to maintain and extend, as changes in other models could have ripple effects on its functionality.
 
 3. Have you explored more about Postman? Tell us how this tool helps you to test your current work. You might want to also list which features in Postman you are interested in or feel like it is helpful to help your Group Project or any of your future software engineering projects.
 Ans:
 
-Yes. Postman allows us to easily send requests to API endpoints and inspect the responses, making it convenient to test different API functionalities, including GET, POST, PUT, DELETE, etc. I also used Postman to create design API for the group project. I feel like the collaboration features will be so helpful for the group project, in which we can share collections, collaboratee on tests, and track changes made by team members. 
+    Yes. Postman allows us to easily send requests to API endpoints and inspect the responses, making it convenient to test different API functionalities, including GET, POST, PUT, DELETE, etc. I also used Postman to create design API for the group project. I feel like the collaboration features will be so helpful for the group project, in which we can share collections, collaboratee on tests, and track changes made by team members. 
 
 #### Reflection Publisher-3
